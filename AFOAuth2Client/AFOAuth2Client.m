@@ -169,6 +169,14 @@ static NSMutableDictionary * AFKeychainQueryDictionaryWithIdentifier(NSString *i
 
     NSMutableURLRequest *mutableRequest = [self requestWithMethod:@"POST" path:path parameters:parameters];
     [mutableRequest setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+    static NSDateFormatter *__rfc1123StringFormatter = nil;
+    if (!__rfc1123StringFormatter) {
+        __rfc1123StringFormatter = [[NSDateFormatter alloc] init];
+        __rfc1123StringFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+        __rfc1123StringFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
+        __rfc1123StringFormatter.dateFormat = @"EEE',' dd MMM yyyy HH':'mm':'ss 'GMT'";
+    }
+    [newRequest setValue:[__rfc1123StringFormatter stringFromDate:[NSDate date]] forHTTPHeaderField:@"Date"];
 
     AFHTTPRequestOperation *requestOperation = [self HTTPRequestOperationWithRequest:mutableRequest success:^(AFHTTPRequestOperation *operation, id responseObject) {
         if ([responseObject valueForKey:@"error"]) {
